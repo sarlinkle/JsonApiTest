@@ -1,0 +1,94 @@
+﻿@page "/"
+@rendermode InteractiveServer
+
+
+<button @onclick="FetchDataFromOneUser">Get one user</button>
+<button @onclick="FetchDataFromAllUsers">Get all users</button>
+
+
+@if (user != null)
+{
+    <p>ID: @user.ID</p>
+    <p>Name: @user.Name</p>   
+    <p>Street: @user.Address.Street</p>
+}
+
+@if (users != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Street</th>
+                <th>City</th>
+                <th>Zip Code</th>
+                <th>Company name</th>
+                <th>Catch phrase</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in users)
+            {
+                <tr>
+                    <td>@user.ID</td>
+                    <td>@user.Name</td>
+                    <td>@user.Email</td>
+                    <td>@user.Address.Street</td>
+                    <td>@user.Address.City</td>
+                    <td>@user.Address.ZipCode</td>
+                    <td>@user.Company.Name</td>
+                    <td>@user.Company.CatchPhrase</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@code {
+    public User user;
+
+    public List<User> users = new List<User>();
+
+    public HttpClient httpClient = new HttpClient();
+
+    public async Task FetchDataFromOneUser()
+    {
+        user = await httpClient.GetFromJsonAsync<User>("https://jsonplaceholder.typicode.com/users/1");
+    }
+
+    public async Task FetchDataFromAllUsers()
+    {
+        users = await httpClient.GetFromJsonAsync<List<User>>("https://jsonplaceholder.typicode.com/users");
+
+    }
+
+    public class User
+    {	
+        public int ID { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public Address Address { get; set; }
+        public Company Company { get; set; }
+        // public Address Street { get; set; }
+        // public Address City { get; set; }
+        // public Address ZipCode { get; set; }
+        // public Company CompanyName { get; set; }
+        // public Company CatchPhrase { get; set; }
+    }
+
+    public class Company
+    {
+        public string? Name { get; set; }
+        public string? CatchPhrase { get; set; }
+    }
+
+    public class Address
+    {
+        public string? Street { get; set; }
+        public string? City { get; set; }
+        public string? ZipCode { get; set; }
+    }
+}
